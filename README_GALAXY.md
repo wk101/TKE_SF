@@ -1,232 +1,219 @@
+# 📊 Metrics README
 
-# Salesforce CRM Galaxy Schema for Enterprise Analytics
+This document outlines the full set of **business and operational metrics** modeled across the enterprise Galaxy Schema for TKE.
 
-This document outlines a galaxy (fact constellation) schema built around Salesforce and related business systems. The schema supports sales, marketing, service, and product analytics by integrating multiple fact tables with shared dimensions.
+Metrics are grouped by domain and tied to their respective **fact tables** (OLAP layer), enabling robust analytics and executive reporting. Each metric is classified by **type**:
+- **Scalar** – A single aggregated value (e.g., total revenue)
+- **Vector** – Aggregated by one dimension (e.g., margin by region)
+- **Matrix** – Aggregated by two dimensions (e.g., cost by department and time)
 
----
+These metrics serve multiple business functions:
+- Sales performance tracking
+- Marketing attribution and ROI
+- Customer service optimization
+- Financial reconciliation (AR, cost centers)
+- Management accounting and allocation analysis
+- Cross-system analytics (Salesforce + SAP)
 
-## 🌌 Overview of Star Schemas in the Galaxy
+This document complements the **OLAP diagram** and supports BI layer implementation (Power BI, Tableau, etc.).
 
-### 1. 🔹 FactOpportunity (Sales Pipeline)
-Tracks potential revenue and pipeline health.
 
-- **Grain:** One row per opportunity stage/status.
-- **Key Metrics:**
-  - Total Pipeline Value — *scalar*
-  - Win Rate by Region — *vector*
-  - Expected Revenue Forecast — *vector*
-  - Deal Conversion Matrix (Lead Source × Stage) — *matrix*
+## 1. Sales & Pipeline Metrics (from Salesforce FactOpportunity)
+| Metric                        | Type   | Description                                   |
+|-------------------------------|--------|-----------------------------------------------|
+| Total Pipeline Value          | Scalar | Sum of open opportunity Amount               |
+| Expected Revenue              | Vector | Weighted by probability                       |
+| Win Rate by Region            | Vector | Won / (Won + Lost), grouped by Region         |
+| Deal Conversion Matrix        | Matrix | Lead Source × Stage transition counts         |
+| Sales Cycle Duration          | Scalar | Avg days from open to close                   |
+| Avg Deal Size                 | Scalar | Avg Amount for closed-won                     |
+| Pipeline Coverage Ratio       | Scalar | Pipeline / Quota                              |
+| Opportunity Aging             | Vector | Days open per opportunity                     |
+| Lost Deal Reasons             | Vector | Count by LostReason field                     |
 
----
+## 2. Quote & Order Metrics (FactQuote, FactOrder)
+| Metric                         | Type   | Description                                     |
+|--------------------------------|--------|-------------------------------------------------|
+| Average Discount               | Vector | % discount from list price                      |
+| Quote-to-Order Conversion Rate | Scalar | Quotes converted to orders                      |
+| Order Volume by Product        | Vector | Quantity or count by product                    |
+| Fulfillment Lag                | Scalar | Days between order and delivery                 |
 
-### 2. 🔹 FactQuote (Quoting Activity)
-Tracks issued quotes and pricing behavior.
+## 3. Marketing Attribution Metrics (FactCampaignResponse)
+| Metric                     | Type   | Description                                          |
+|----------------------------|--------|------------------------------------------------------|
+| Campaign Conversion Rate   | Vector | Responses / Total Reach                              |
+| Attributed Revenue         | Vector | SFDC opportunity revenue linked to campaign          |
+| Channel Effectiveness      | Matrix | Revenue or leads per channel × region                |
+| Cost per Lead              | Vector | Campaign Spend / Leads generated                     |
+| Marketing ROI              | Scalar | (Revenue - Spend) / Spend                            |
 
-- **Grain:** One row per quote per version.
-- **Key Metrics:**
-  - Average Discount by Product Family — *vector*
-  - Quote-to-Order Conversion Rate — *scalar*
-  - Active Quotes by Rep and Region — *matrix*
+## 4. Customer Service & Asset Metrics (FactCase, FactAsset)
+| Metric                         | Type    | Description                                 |
+|--------------------------------|---------|---------------------------------------------|
+| Average Resolution Time        | Vector  | Case closure duration by region             |
+| First Contact Resolution Rate  | Scalar  | % resolved on first contact                 |
+| Active Installed Base          | Vector  | Count of current assets in field            |
+| Maintenance Cost per Asset     | Vector  | Service cost aggregated by asset ID         |
+| Case Volume by Type and Status | Matrix  | For backlog, SLA tracking                   |
 
----
+## 5. Rep Activity & Engagement Metrics (FactActivity)
+| Metric                        | Type   | Description                                |
+|-------------------------------|--------|--------------------------------------------|
+| Calls/Emails per Rep per Day  | Matrix | Activity type × day × rep                  |
+| Follow-up Rate                | Scalar | % of leads followed up within X days       |
+| Engagement Velocity           | Vector | Avg time between touches                   |
+| Open Tasks Aging              | Vector | Days since assignment                      |
 
-### 3. 🔹 FactOrder (Orders & Fulfillment)
-Tracks confirmed orders and revenue backlog.
+## 6. Finance & Billing Metrics (FactInvoice, FactPayment)
+| Metric                     | Type   | Description                                  |
+|----------------------------|--------|----------------------------------------------|
+| Total Invoiced Amount      | Scalar | Sum of InvoiceAmount                         |
+| AR Aging Buckets           | Vector | 0–30, 31–60, 61–90, >90 days                 |
+| Collection Rate            | Vector | Paid / Invoiced by period                    |
+| DSO (Days Sales Outstanding)| Scalar| AR ÷ Avg Daily Revenue                       |
+| Invoice-to-Cash Cycle      | Scalar | Days from invoice to payment                 |
 
-- **Grain:** One row per order per customer.
-- **Key Metrics:**
-  - Total Orders by Quarter — *vector*
-  - Revenue Backlog by Product — *vector*
-  - Fulfillment Lag (Order Date → Ship Date) — *scalar*
+## 7. Management Accounting Metrics (FactCost, FactRevenue, FactAllocation)
+| Metric                        | Type         | Description                                    |
+|-------------------------------|--------------|------------------------------------------------|
+| Gross Margin                  | Scalar/Vector| Revenue - Direct Cost (by Product/Region)      |
+| Contribution Margin           | Vector       | Revenue - Variable Cost                        |
+| Budget vs Actual              | Matrix       | Time × Account × Cost Center                   |
+| Fixed vs Variable Cost Ratio  | Scalar       | % of each cost type                            |
+| Cost per Unit Installed       | Scalar       | Total cost / Installations                     |
+| Operating Expense by Department| Matrix      | Department × Period                            |
+| Vendor Spend Analysis         | Vector       | Total spend by Vendor Category                 |
+| Inter-Cost Center Allocations | Matrix       | From → To amount allocations                   |
+| CAPEX by Region               | Vector       | Total capital expenditure per region           |
 
----
+## 8. Cross-System Metrics (Salesforce + SAP)
+| Metric                           | Type   | Description                                    |
+|----------------------------------|--------|------------------------------------------------|
+| Forecasted Revenue vs Actual Cost| Vector | SFDC pipeline vs SAP GL                        |
+| Budget Variance                  | Matrix | Budgeted vs Actual by region/product           |
+| Profitability by Customer/Region | Vector | SFDC Revenue - SAP Cost                        |
+| YOY Growth (Revenue/Cost)        | Vector | Year-over-year trend line                      |
 
-### 4. 🔹 FactCase (Service Requests)
-Tracks customer support and field service.
+# 📈 OLAP Metrics Diagram – Galaxy Schema Overview
 
-- **Grain:** One row per service case.
-- **Key Metrics:**
-  - Average Resolution Time by Region — *vector*
-  - First Contact Resolution Rate — *scalar*
-  - Case Volume Matrix (Type × Status) — *matrix*
+This diagram represents the OLAP layer for a **Galaxy Schema** architecture designed for TKE, integrating metrics across **Salesforce**, **SAP**, and other enterprise systems. 
 
----
-
-### 5. 🔹 FactActivity (Tasks & Engagements)
-Tracks rep activity: emails, calls, tasks.
-
-- **Grain:** One row per activity logged.
-- **Key Metrics:**
-  - Calls per Rep per Day — *matrix*
-  - Follow-up Rate — *scalar*
-  - Engagement Velocity (Time between touches) — *vector*
-
----
-
-### 6. 🔹 FactAsset (Installed Base)
-Tracks delivered and serviced products.
-
-- **Grain:** One row per asset instance per customer.
-- **Key Metrics:**
-  - Active Asset Count by Model — *vector*
-  - Avg Age of Installed Products — *scalar*
-  - Serviceable Units by Region & Status — *matrix*
-
----
-
-### 7. 🔹 FactCampaignResponse (Marketing Attribution)
-Tracks lead interactions with campaigns.
-
-- **Grain:** One row per campaign-contact interaction.
-- **Key Metrics:**
-  - Conversion Rate by Campaign — *vector*
-  - Attributed Revenue (First/Last/Even) — *vector*
-  - Channel Effectiveness Matrix (Channel × Region) — *matrix*
-
----
-
-### 8. 🔹 FactInvoice / FactPayment (Billing)
-Tracks financial transactions and collections.
-
-- **Grain:** One row per invoice/payment.
-- **Key Metrics:**
-  - AR Aging Buckets — *vector*
-  - DSO (Days Sales Outstanding) — *scalar*
-  - Collection Rate by Rep and Quarter — *matrix*
-
----
-
-## 📐 Shared Dimensions
-
-| Dimension        | Description                         |
-|------------------|-------------------------------------|
-| `DimAccount`      | Customer, business unit             |
-| `DimUser`         | Sales rep, service agent            |
-| `DimProduct`      | Elevator, service plan, spare part  |
-| `DimTime`         | Standard calendar dimension         |
-| `DimRegion`       | Geo hierarchy (Region > Country)    |
-| `DimCampaign`     | Marketing campaign metadata         |
-| `DimStatus`       | Status descriptors (case, asset)    |
-| `DimChannel`      | Email, phone, web, trade show       |
+Each fact table (e.g., `FactOpportunity`, `FactCost`, `FactInvoice`) is modeled as a **star schema**, and the constellation of these facts forms a **Galaxy Schema**.
 
 ---
 
-## 🧠 Best Practices
+## 🌀 Galaxy Architecture Notes
 
-- Apply **surrogate keys** for dimension joins to ensure consistency across facts.
-- Use **SCD Type 2** on slowly changing dimensions (e.g., Account Type, Product Category).
-- Create **bridge tables** for multi-valued joins (e.g., Quote ↔ Product).
-- Implement **snapshot logic** for point-in-time tracking (e.g., Opportunity status daily).
+- **Fact Tables:** Represent core business processes (e.g., Sales Pipeline, Campaign Response, Invoicing, Cost Accounting).
+- **Shared Dimensions:** `DimTime`, `DimRegion`, `DimProduct`, `DimAccount`, and `DimCurrency` serve as **wormholes**, enabling cross-fact analysis.
+- **Metrics:** Grouped by business domain, classified as scalar, vector, or matrix.
+- **Integration Points:**
+  - Salesforce ↔ SAP revenue/cost alignment
+  - Marketing ↔ Opportunity influence tracking
+  - Finance ↔ Cost center reporting and allocations
 
 ---
 
-This galaxy schema provides a scalable, multi-process analytical foundation for sales, service, marketing, and financial reporting.
+## 🧭 Example Wormholes (Shared Dimensions)
 
+| Wormhole Dimension | Used In                                      |
+|---------------------|----------------------------------------------|
+| `DimTime`           | All fact tables — time alignment              |
+| `DimProduct`        | Opportunity, Quote, Order, Revenue, Cost      |
+| `DimRegion`         | Opportunity, Campaign, Cost, Revenue          |
+| `DimAccount`        | CRM (Sales), Invoicing, Costing               |
+| `DimCurrency`       | Finance, Revenue, Cost — for FX normalization|
+
+---
+
+## 🔧 Usage
+
+The following Mermaid diagram maps each **metric** to its source **fact table**, forming a visual OLAP layer to support:
+- Executive dashboards
+- Departmental KPIs
+- Financial consolidation
+- Cross-system audits and reconciliations
+
+Continue below for the visual structure.
 
 
 ```mermaid
-erDiagram
+graph TD
 
-%% Core Fact Tables
-FactOpportunity ||--o{ DimAccount : "account_id"
-FactOpportunity ||--o{ DimUser : "owner_user_id"
-FactOpportunity ||--o{ DimProduct : "product_focus_id"
-FactOpportunity ||--o{ DimTime : "created_date_id"
-FactOpportunity ||--o{ DimTime : "close_date_id"
-FactOpportunity ||--o{ DimRegion : "region_id"
-FactOpportunity ||--o{ DimCampaign : "campaign_id"
+%% Metrics grouped by fact tables
+%% Sales & Pipeline
+FactOpportunity["FactOpportunity (Sales & Pipeline)"]
+FactOpportunity --> M1[Total Pipeline Value]
+FactOpportunity --> M2[Expected Revenue]
+FactOpportunity --> M3[Win Rate by Region]
+FactOpportunity --> M4[Deal Conversion Matrix]
+FactOpportunity --> M5[Sales Cycle Duration]
+FactOpportunity --> M6[Avg Deal Size]
+FactOpportunity --> M7[Pipeline Coverage Ratio]
+FactOpportunity --> M8[Opportunity Aging]
+FactOpportunity --> M9[Lost Deal Reasons]
 
-FactQuote ||--o{ DimAccount : "account_id"
-FactQuote ||--o{ DimUser : "rep_user_id"
-FactQuote ||--o{ DimProduct : "product_id"
-FactQuote ||--o{ DimTime : "quote_date_id"
-FactQuote ||--o{ DimRegion : "region_id"
+%% Quote & Order
+FactQuote["FactQuote"]
+FactOrder["FactOrder"]
+FactQuote --> M10[Average Discount]
+FactQuote --> M11[Quote-to-Order Conversion Rate]
+FactOrder --> M12[Order Volume by Product]
+FactOrder --> M13[Fulfillment Lag]
 
-FactOrder ||--o{ DimAccount : "account_id"
-FactOrder ||--o{ DimProduct : "product_id"
-FactOrder ||--o{ DimTime : "order_date_id"
-FactOrder ||--o{ DimRegion : "region_id"
+%% Marketing
+FactCampaignResponse["FactCampaignResponse"]
+FactCampaignResponse --> M14[Campaign Conversion Rate]
+FactCampaignResponse --> M15[Attributed Revenue]
+FactCampaignResponse --> M16[Channel Effectiveness]
+FactCampaignResponse --> M17[Cost per Lead]
+FactCampaignResponse --> M18[Marketing ROI]
 
-FactCase ||--o{ DimAccount : "account_id"
-FactCase ||--o{ DimUser : "agent_user_id"
-FactCase ||--o{ DimTime : "case_open_date_id"
-FactCase ||--o{ DimRegion : "region_id"
-FactCase ||--o{ DimStatus : "case_status_id"
+%% Service & Asset
+FactCase["FactCase"]
+FactAsset["FactAsset"]
+FactCase --> M19[Average Resolution Time]
+FactCase --> M20[First Contact Resolution Rate]
+FactAsset --> M21[Active Installed Base]
+FactAsset --> M22[Maintenance Cost per Asset]
+FactCase --> M23[Case Volume by Type and Status]
 
-FactActivity ||--o{ DimUser : "user_id"
-FactActivity ||--o{ DimAccount : "account_id"
-FactActivity ||--o{ DimTime : "activity_date_id"
-FactActivity ||--o{ DimRegion : "region_id"
+%% Rep Activity
+FactActivity["FactActivity"]
+FactActivity --> M24[Calls/Emails per Rep per Day]
+FactActivity --> M25[Follow-up Rate]
+FactActivity --> M26[Engagement Velocity]
+FactActivity --> M27[Open Tasks Aging]
 
-FactAsset ||--o{ DimAccount : "account_id"
-FactAsset ||--o{ DimProduct : "product_id"
-FactAsset ||--o{ DimRegion : "region_id"
-FactAsset ||--o{ DimStatus : "asset_status_id"
-FactAsset ||--o{ DimTime : "install_date_id"
+%% Finance
+FactInvoice["FactInvoice"]
+FactPayment["FactPayment"]
+FactInvoice --> M28[Total Invoiced Amount]
+FactInvoice --> M29[AR Aging Buckets]
+FactPayment --> M30[Collection Rate]
+FactInvoice --> M31[DSO]
+FactPayment --> M32[Invoice-to-Cash Cycle]
 
-FactCampaignResponse ||--o{ DimCampaign : "campaign_id"
-FactCampaignResponse ||--o{ DimTime : "response_date_id"
-FactCampaignResponse ||--o{ DimChannel : "channel_id"
-FactCampaignResponse ||--o{ DimRegion : "region_id"
+%% Management Accounting
+FactCost["FactCost"]
+FactRevenue["FactRevenue"]
+FactAllocation["FactAllocation"]
+FactRevenue --> M33[Gross Margin]
+FactRevenue --> M34[Contribution Margin]
+FactCost --> M35[Budget vs Actual]
+FactCost --> M36[Fixed vs Variable Cost Ratio]
+FactCost --> M37[Cost per Unit Installed]
+FactCost --> M38[Operating Expense by Department]
+FactCost --> M39[Vendor Spend Analysis]
+FactAllocation --> M40[Inter-Cost Center Allocations]
+FactCost --> M41[CAPEX by Region]
 
-FactInvoice ||--o{ DimAccount : "account_id"
-FactInvoice ||--o{ DimTime : "invoice_date_id"
-FactInvoice ||--o{ DimRegion : "region_id"
-
-FactPayment ||--o{ DimAccount : "account_id"
-FactPayment ||--o{ DimTime : "payment_date_id"
-FactPayment ||--o{ DimRegion : "region_id"
-
-%% Shared Dimensions
-DimAccount {
-    string account_id PK
-    string account_name
-    string industry
-    string country
-}
-
-DimUser {
-    string user_id PK
-    string full_name
-    string role
-    string region_id FK
-}
-
-DimProduct {
-    string product_id PK
-    string product_name
-    string category
-}
-
-DimTime {
-    string date_id PK
-    date full_date
-    string month
-    int year
-    string quarter
-}
-
-DimRegion {
-    string region_id PK
-    string region_name
-    string country
-}
-
-DimCampaign {
-    string campaign_id PK
-    string name
-    string type
-}
-
-DimChannel {
-    string channel_id PK
-    string channel_name
-}
-
-DimStatus {
-    string status_id PK
-    string status_name
-    string status_type
-}
+%% Cross-System
+CrossMetrics["Salesforce + SAP (Cross-System)"]
+CrossMetrics --> M42[Forecasted Revenue vs Actual Cost]
+CrossMetrics --> M43[Budget Variance]
+CrossMetrics --> M44[Profitability by Customer/Region]
+CrossMetrics --> M45[YOY Growth]
 ```
 
