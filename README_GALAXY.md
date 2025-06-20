@@ -215,5 +215,89 @@ CrossMetrics --> M42[Forecasted Revenue vs Actual Cost]
 CrossMetrics --> M43[Budget Variance]
 CrossMetrics --> M44[Profitability by Customer/Region]
 CrossMetrics --> M45[YOY Growth]
+
+%% Shared Dimensions (Wormholes)
+
+DimTime["DimTime"]
+DimRegion["DimRegion"]
+DimProduct["DimProduct"]
+DimAccount["DimAccount"]
+DimCurrency["DimCurrency"]
+DimCustomer["DimCustomer"]
+DimChannel["DimChannel"]
+DimCostCenter["DimCostCenter"]
+DimCampaign["DimCampaign"]
+
+%% Link facts to shared dimensions (wormholes)
+
+FactOpportunity --> DimTime
+FactOpportunity --> DimRegion
+FactOpportunity --> DimProduct
+FactOpportunity --> DimAccount
+FactOpportunity --> DimCampaign
+
+FactQuote --> DimTime
+FactQuote --> DimRegion
+FactQuote --> DimProduct
+FactQuote --> DimAccount
+
+FactOrder --> DimTime
+FactOrder --> DimRegion
+FactOrder --> DimProduct
+FactOrder --> DimAccount
+FactOrder --> DimCurrency
+
+FactCampaignResponse --> DimTime
+FactCampaignResponse --> DimRegion
+FactCampaignResponse --> DimChannel
+FactCampaignResponse --> DimCampaign
+FactCampaignResponse --> DimCustomer
+
+FactCase --> DimTime
+FactCase --> DimRegion
+FactCase --> DimAccount
+
+FactAsset --> DimTime
+FactAsset --> DimRegion
+FactAsset --> DimProduct
+FactAsset --> DimAccount
+
+FactActivity --> DimTime
+FactActivity --> DimRegion
+FactActivity --> DimAccount
+
+FactInvoice --> DimTime
+FactInvoice --> DimRegion
+FactInvoice --> DimAccount
+FactInvoice --> DimProduct
+FactInvoice --> DimCurrency
+
+FactPayment --> DimTime
+FactPayment --> DimRegion
+FactPayment --> DimAccount
+FactPayment --> DimCurrency
+
+FactCost --> DimTime
+FactCost --> DimRegion
+FactCost --> DimProduct
+FactCost --> DimAccount
+FactCost --> DimCurrency
+FactCost --> DimCostCenter
+
+FactRevenue --> DimTime
+FactRevenue --> DimRegion
+FactRevenue --> DimProduct
+FactRevenue --> DimAccount
+FactRevenue --> DimCurrency
+
+FactAllocation --> DimTime
+FactAllocation --> DimCostCenter
+FactAllocation --> DimAccount
+FactAllocation --> DimCurrency
+
+CrossMetrics --> DimTime
+CrossMetrics --> DimRegion
+CrossMetrics --> DimAccount
+
 ```
 
