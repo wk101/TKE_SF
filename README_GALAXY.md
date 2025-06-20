@@ -140,164 +140,182 @@ Continue below for the visual structure.
 
 ```mermaid
 graph TD
+    %% Clusters for Fact Tables and Metrics
+    
+    subgraph Sales_and_Pipeline["Sales & Pipeline"]
+        direction LR
+        FO[FactOpportunity]
+        FO --> M1[Total Pipeline Value]
+        FO --> M2[Expected Revenue]
+        FO --> M3[Win Rate by Region]
+        FO --> M4[Deal Conversion Matrix]
+        FO --> M5[Sales Cycle Duration]
+        FO --> M6[Avg Deal Size]
+        FO --> M7[Pipeline Coverage Ratio]
+        FO --> M8[Opportunity Aging]
+        FO --> M9[Lost Deal Reasons]
+    end
 
-%% Metrics grouped by fact tables
-%% Sales & Pipeline
-FactOpportunity["FactOpportunity (Sales & Pipeline)"]
-FactOpportunity --> M1[Total Pipeline Value]
-FactOpportunity --> M2[Expected Revenue]
-FactOpportunity --> M3[Win Rate by Region]
-FactOpportunity --> M4[Deal Conversion Matrix]
-FactOpportunity --> M5[Sales Cycle Duration]
-FactOpportunity --> M6[Avg Deal Size]
-FactOpportunity --> M7[Pipeline Coverage Ratio]
-FactOpportunity --> M8[Opportunity Aging]
-FactOpportunity --> M9[Lost Deal Reasons]
+    subgraph Quote_and_Order["Quote & Order"]
+        direction LR
+        FQ[FactQuote]
+        FOd[FactOrder]
+        FQ --> M10[Average Discount]
+        FQ --> M11[Quote-to-Order Conversion Rate]
+        FOd --> M12[Order Volume by Product]
+        FOd --> M13[Fulfillment Lag]
+    end
 
-%% Quote & Order
-FactQuote["FactQuote"]
-FactOrder["FactOrder"]
-FactQuote --> M10[Average Discount]
-FactQuote --> M11[Quote-to-Order Conversion Rate]
-FactOrder --> M12[Order Volume by Product]
-FactOrder --> M13[Fulfillment Lag]
+    subgraph Marketing["Marketing"]
+        direction LR
+        FC[FactCampaignResponse]
+        FC --> M14[Campaign Conversion Rate]
+        FC --> M15[Attributed Revenue]
+        FC --> M16[Channel Effectiveness]
+        FC --> M17[Cost per Lead]
+        FC --> M18[Marketing ROI]
+    end
 
-%% Marketing
-FactCampaignResponse["FactCampaignResponse"]
-FactCampaignResponse --> M14[Campaign Conversion Rate]
-FactCampaignResponse --> M15[Attributed Revenue]
-FactCampaignResponse --> M16[Channel Effectiveness]
-FactCampaignResponse --> M17[Cost per Lead]
-FactCampaignResponse --> M18[Marketing ROI]
+    subgraph Service_Asset["Service & Asset"]
+        direction LR
+        FCA[FactCase]
+        FA[FactAsset]
+        FCA --> M19[Average Resolution Time]
+        FCA --> M20[First Contact Resolution Rate]
+        FA --> M21[Active Installed Base]
+        FA --> M22[Maintenance Cost per Asset]
+        FCA --> M23[Case Volume by Type and Status]
+    end
 
-%% Service & Asset
-FactCase["FactCase"]
-FactAsset["FactAsset"]
-FactCase --> M19[Average Resolution Time]
-FactCase --> M20[First Contact Resolution Rate]
-FactAsset --> M21[Active Installed Base]
-FactAsset --> M22[Maintenance Cost per Asset]
-FactCase --> M23[Case Volume by Type and Status]
+    subgraph Rep_Activity["Rep Activity"]
+        direction LR
+        FAT[FactActivity]
+        FAT --> M24[Calls/Emails per Rep per Day]
+        FAT --> M25[Follow-up Rate]
+        FAT --> M26[Engagement Velocity]
+        FAT --> M27[Open Tasks Aging]
+    end
 
-%% Rep Activity
-FactActivity["FactActivity"]
-FactActivity --> M24[Calls/Emails per Rep per Day]
-FactActivity --> M25[Follow-up Rate]
-FactActivity --> M26[Engagement Velocity]
-FactActivity --> M27[Open Tasks Aging]
+    subgraph Finance["Finance"]
+        direction LR
+        FI[FactInvoice]
+        FP[FactPayment]
+        FI --> M28[Total Invoiced Amount]
+        FI --> M29[AR Aging Buckets]
+        FP --> M30[Collection Rate]
+        FI --> M31[DSO]
+        FP --> M32[Invoice-to-Cash Cycle]
+    end
 
-%% Finance
-FactInvoice["FactInvoice"]
-FactPayment["FactPayment"]
-FactInvoice --> M28[Total Invoiced Amount]
-FactInvoice --> M29[AR Aging Buckets]
-FactPayment --> M30[Collection Rate]
-FactInvoice --> M31[DSO]
-FactPayment --> M32[Invoice-to-Cash Cycle]
+    subgraph Management_Accounting["Management Accounting"]
+        direction LR
+        FCst[FactCost]
+        FR[FactRevenue]
+        FAlo[FactAllocation]
+        FR --> M33[Gross Margin]
+        FR --> M34[Contribution Margin]
+        FCst --> M35[Budget vs Actual]
+        FCst --> M36[Fixed vs Variable Cost Ratio]
+        FCst --> M37[Cost per Unit Installed]
+        FCst --> M38[Operating Expense by Department]
+        FCst --> M39[Vendor Spend Analysis]
+        FAlo --> M40[Inter-Cost Center Allocations]
+        FCst --> M41[CAPEX by Region]
+    end
 
-%% Management Accounting
-FactCost["FactCost"]
-FactRevenue["FactRevenue"]
-FactAllocation["FactAllocation"]
-FactRevenue --> M33[Gross Margin]
-FactRevenue --> M34[Contribution Margin]
-FactCost --> M35[Budget vs Actual]
-FactCost --> M36[Fixed vs Variable Cost Ratio]
-FactCost --> M37[Cost per Unit Installed]
-FactCost --> M38[Operating Expense by Department]
-FactCost --> M39[Vendor Spend Analysis]
-FactAllocation --> M40[Inter-Cost Center Allocations]
-FactCost --> M41[CAPEX by Region]
+    subgraph Cross_System["Cross-System (Salesforce + SAP)"]
+        direction LR
+        CM[CrossMetrics]
+        CM --> M42[Forecasted Revenue vs Actual Cost]
+        CM --> M43[Budget Variance]
+        CM --> M44[Profitability by Customer/Region]
+        CM --> M45[YOY Growth]
+    end
 
-%% Cross-System
-CrossMetrics["Salesforce + SAP (Cross-System)"]
-CrossMetrics --> M42[Forecasted Revenue vs Actual Cost]
-CrossMetrics --> M43[Budget Variance]
-CrossMetrics --> M44[Profitability by Customer/Region]
-CrossMetrics --> M45[YOY Growth]
+    %% Shared Dimensions (Wormholes)
+    subgraph Shared_Dimensions["Shared Dimensions (Wormholes)"]
+        direction TB
+        DimTime[DimTime]
+        DimRegion[DimRegion]
+        DimProduct[DimProduct]
+        DimAccount[DimAccount]
+        DimCurrency[DimCurrency]
+        DimCustomer[DimCustomer]
+        DimChannel[DimChannel]
+        DimCostCenter[DimCostCenter]
+        DimCampaign[DimCampaign]
+    end
 
-%% Shared Dimensions (Wormholes)
+    %% Connect Fact tables to Shared Dimensions (wormholes)
 
-DimTime["DimTime"]
-DimRegion["DimRegion"]
-DimProduct["DimProduct"]
-DimAccount["DimAccount"]
-DimCurrency["DimCurrency"]
-DimCustomer["DimCustomer"]
-DimChannel["DimChannel"]
-DimCostCenter["DimCostCenter"]
-DimCampaign["DimCampaign"]
+    FO --> DimTime
+    FO --> DimRegion
+    FO --> DimProduct
+    FO --> DimAccount
+    FO --> DimCampaign
 
-%% Link facts to shared dimensions (wormholes)
+    FQ --> DimTime
+    FQ --> DimRegion
+    FQ --> DimProduct
+    FQ --> DimAccount
 
-FactOpportunity --> DimTime
-FactOpportunity --> DimRegion
-FactOpportunity --> DimProduct
-FactOpportunity --> DimAccount
-FactOpportunity --> DimCampaign
+    FOd --> DimTime
+    FOd --> DimRegion
+    FOd --> DimProduct
+    FOd --> DimAccount
+    FOd --> DimCurrency
 
-FactQuote --> DimTime
-FactQuote --> DimRegion
-FactQuote --> DimProduct
-FactQuote --> DimAccount
+    FC --> DimTime
+    FC --> DimRegion
+    FC --> DimChannel
+    FC --> DimCampaign
+    FC --> DimCustomer
 
-FactOrder --> DimTime
-FactOrder --> DimRegion
-FactOrder --> DimProduct
-FactOrder --> DimAccount
-FactOrder --> DimCurrency
+    FCA --> DimTime
+    FCA --> DimRegion
+    FCA --> DimAccount
 
-FactCampaignResponse --> DimTime
-FactCampaignResponse --> DimRegion
-FactCampaignResponse --> DimChannel
-FactCampaignResponse --> DimCampaign
-FactCampaignResponse --> DimCustomer
+    FA --> DimTime
+    FA --> DimRegion
+    FA --> DimProduct
+    FA --> DimAccount
 
-FactCase --> DimTime
-FactCase --> DimRegion
-FactCase --> DimAccount
+    FAT --> DimTime
+    FAT --> DimRegion
+    FAT --> DimAccount
 
-FactAsset --> DimTime
-FactAsset --> DimRegion
-FactAsset --> DimProduct
-FactAsset --> DimAccount
+    FI --> DimTime
+    FI --> DimRegion
+    FI --> DimAccount
+    FI --> DimProduct
+    FI --> DimCurrency
 
-FactActivity --> DimTime
-FactActivity --> DimRegion
-FactActivity --> DimAccount
+    FP --> DimTime
+    FP --> DimRegion
+    FP --> DimAccount
+    FP --> DimCurrency
 
-FactInvoice --> DimTime
-FactInvoice --> DimRegion
-FactInvoice --> DimAccount
-FactInvoice --> DimProduct
-FactInvoice --> DimCurrency
+    FCst --> DimTime
+    FCst --> DimRegion
+    FCst --> DimProduct
+    FCst --> DimAccount
+    FCst --> DimCurrency
+    FCst --> DimCostCenter
 
-FactPayment --> DimTime
-FactPayment --> DimRegion
-FactPayment --> DimAccount
-FactPayment --> DimCurrency
+    FR --> DimTime
+    FR --> DimRegion
+    FR --> DimProduct
+    FR --> DimAccount
+    FR --> DimCurrency
 
-FactCost --> DimTime
-FactCost --> DimRegion
-FactCost --> DimProduct
-FactCost --> DimAccount
-FactCost --> DimCurrency
-FactCost --> DimCostCenter
+    FAlo --> DimTime
+    FAlo --> DimCostCenter
+    FAlo --> DimAccount
+    FAlo --> DimCurrency
 
-FactRevenue --> DimTime
-FactRevenue --> DimRegion
-FactRevenue --> DimProduct
-FactRevenue --> DimAccount
-FactRevenue --> DimCurrency
-
-FactAllocation --> DimTime
-FactAllocation --> DimCostCenter
-FactAllocation --> DimAccount
-FactAllocation --> DimCurrency
-
-CrossMetrics --> DimTime
-CrossMetrics --> DimRegion
-CrossMetrics --> DimAccount
+    CM --> DimTime
+    CM --> DimRegion
+    CM --> DimAccount
 
 ```
 
